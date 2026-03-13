@@ -1,0 +1,22 @@
+# Common
+node_modules/
+.DS_Store
+*.log
+
+# Server
+agro_server/.env
+agro_server/data/*.sqlite
+agro_server/data/*.wt
+agro_server/test_*.js
+agro_server/cleanup_db.js
+agro_server/inspect_users.js
+agro_server/verify_sqlite.js
+
+# Client
+agro_client/dist/
+agro_client/dist-ssr/
+agro_client/*.local
+
+# IDE
+.vscode/
+.idea/
