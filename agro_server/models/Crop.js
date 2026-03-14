@@ -70,6 +70,10 @@ const Crop = sequelize.define('Crop', {
     ratings: {
         type: DataTypes.JSON,
         defaultValue: []
+    },
+    farmerPhone: {
+        type: DataTypes.STRING,
+        allowNull: true
     }
 }, {
     timestamps: true

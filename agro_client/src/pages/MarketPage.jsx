@@ -77,16 +77,19 @@ export default function MarketPage() {
     const [refreshing, setRefreshing] = useState(false);
     const [lastUpdated, setLastUpdated] = useState(null);
     const intervalRef = useRef(null);
+    // Use ref to access latest prices inside interval without stale closure
+    const pricesRef = useRef([]);
+    useEffect(() => { pricesRef.current = prices; }, [prices]);
 
     const fetchPrices = useCallback(async (silent = false) => {
         try {
             if (!silent) setLoading(true);
             const { data } = await api.get('/market?days=1');
             if (data.length > 0) {
-                // Track previous prices for up/down indicators
-                setPrevPrices(prev => {
-                    const next = { ...prev };
-                    prices.forEach(p => { next[p.cropName] = p.price; });
+                // Track previous prices for up/down indicators using ref (no stale closure)
+                setPrevPrices(() => {
+                    const next = {};
+                    pricesRef.current.forEach(p => { next[p.cropName] = p.price; });
                     return next;
                 });
                 setPrices(data);
@@ -99,7 +102,7 @@ export default function MarketPage() {
         } finally {
             if (!silent) setLoading(false);
         }
-    }, [prices]);
+    }, []); // No deps - uses ref for prices
 
     const fetchHistory = useCallback(async () => {
         try {
@@ -132,14 +135,14 @@ export default function MarketPage() {
     useEffect(() => { initMarket(); }, []);
     useEffect(() => { fetchHistory(); }, [fetchHistory]);
 
-    // Live price refresh every 15 seconds
+    // Live price refresh every 15 seconds — registered once, uses ref for prev prices
     useEffect(() => {
         intervalRef.current = setInterval(async () => {
             try {
                 const { data } = await api.post('/market/refresh');
-                setPrevPrices(prev => {
-                    const next = { ...prev };
-                    prices.forEach(p => { next[p.cropName] = p.price; });
+                setPrevPrices(() => {
+                    const next = {};
+                    pricesRef.current.forEach(p => { next[p.cropName] = p.price; });
                     return next;
                 });
                 setPrices(data.prices || []);
@@ -147,7 +150,7 @@ export default function MarketPage() {
             } catch (err) { /* silent */ }
         }, 15000);
         return () => clearInterval(intervalRef.current);
-    }, [prices]);
+    }, []); // Registered once on mount
 
     const handleSeed = async () => {
         setSeeding(true);
@@ -166,9 +169,9 @@ export default function MarketPage() {
         setRefreshing(true);
         try {
             const { data } = await api.post('/market/refresh');
-            setPrevPrices(prev => {
-                const next = { ...prev };
-                prices.forEach(p => { next[p.cropName] = p.price; });
+            setPrevPrices(() => {
+                const next = {};
+                pricesRef.current.forEach(p => { next[p.cropName] = p.price; });
                 return next;
             });
             setPrices(data.prices || []);

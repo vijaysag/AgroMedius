@@ -96,7 +96,7 @@ exports.updateOrderStatus = async (req, res) => {
     try {
         const { status } = req.body;
         const order = await Order.findByPk(req.params.id, {
-            include: [{ model: Crop, as: 'crop', attributes: ['name'] }]
+            include: [{ model: Crop, as: 'crop' }]
         });
 
         if (!order) return res.status(404).json({ message: 'Order not found' });
@@ -112,6 +112,14 @@ exports.updateOrderStatus = async (req, res) => {
         console.log(`Updating order ${req.params.id}. Status: ${prevStatus} -> ${status}`);
 
         await order.save();
+
+        // Handle quantity return if cancelled/rejected
+        if ((status === 'cancelled' || status === 'rejected') && 
+            (prevStatus !== 'cancelled' && prevStatus !== 'rejected') && 
+            order.crop) {
+            order.crop.quantity += order.quantity;
+            await order.crop.save();
+        }
 
         const cropName = order.crop?.name || 'your crop';
 

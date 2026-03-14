@@ -47,8 +47,16 @@ export const AuthProvider = ({ children }) => {
         setUser(null);
     };
 
+    const updateUser = (updatedData) => {
+        setUser(prev => {
+            const merged = { ...prev, ...updatedData };
+            localStorage.setItem('agroUser', JSON.stringify(merged));
+            return merged;
+        });
+    };
+
     return (
-        <AuthContext.Provider value={{ user, login, register, logout, loading }}>
+        <AuthContext.Provider value={{ user, login, register, logout, loading, updateUser }}>
             {children}
         </AuthContext.Provider>
     );

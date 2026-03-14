@@ -36,7 +36,7 @@ export default function FarmerDashboard() {
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
     const [editCrop, setEditCrop] = useState(null);
-    const [form, setForm] = useState({ name: '', category: 'grain', quantity: '', unit: 'kg', pricePerUnit: '', description: '', growthStatus: 'sowing', soilType: 'loamy', irrigationType: 'rainfed', harvestDate: '' });
+    const [form, setForm] = useState({ name: '', category: 'grain', quantity: '', unit: 'kg', pricePerUnit: '', description: '', growthStatus: 'sowing', soilType: 'loamy', irrigationType: 'rainfed', harvestDate: '', farmerPhone: user?.phone || '' });
     const [submitting, setSubmitting] = useState(false);
     const [toast, setToast] = useState(null);
 
@@ -66,8 +66,8 @@ export default function FarmerDashboard() {
         setTimeout(() => setToast(null), 3500);
     };
 
-    const openAdd = () => { setEditCrop(null); setForm({ name: '', category: 'grain', quantity: '', unit: 'kg', pricePerUnit: '', description: '', growthStatus: 'sowing', soilType: 'loamy', irrigationType: 'rainfed', harvestDate: '' }); setShowModal(true); };
-    const openEdit = (c) => { setEditCrop(c); setForm({ name: c.name, category: c.category, quantity: c.quantity, unit: c.unit, pricePerUnit: c.pricePerUnit, description: c.description || '', growthStatus: c.growthStatus, soilType: c.soilType || 'loamy', irrigationType: c.irrigationType || 'rainfed', harvestDate: c.harvestDate ? c.harvestDate.substring(0, 10) : '' }); setShowModal(true); };
+    const openAdd = () => { setEditCrop(null); setForm({ name: '', category: 'grain', quantity: '', unit: 'kg', pricePerUnit: '', description: '', growthStatus: 'sowing', soilType: 'loamy', irrigationType: 'rainfed', harvestDate: '', farmerPhone: user?.phone || '' }); setShowModal(true); };
+    const openEdit = (c) => { setEditCrop(c); setForm({ name: c.name, category: c.category, quantity: c.quantity, unit: c.unit, pricePerUnit: c.pricePerUnit, description: c.description || '', growthStatus: c.growthStatus, soilType: c.soilType || 'loamy', irrigationType: c.irrigationType || 'rainfed', harvestDate: c.harvestDate ? c.harvestDate.substring(0, 10) : '', farmerPhone: c.farmerPhone || user?.phone || '' }); setShowModal(true); };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -187,6 +187,36 @@ export default function FarmerDashboard() {
 
                     {/* Sidebar */}
                     <div className="space-y-6">
+                        {/* Pending Orders Action Card */}
+                        <div className="glass rounded-2xl p-6 border border-amber-500/20 bg-amber-500/5">
+                            <div className="flex items-center justify-between mb-4">
+                                <h2 className="font-semibold text-white flex items-center gap-2">
+                                    <ClipboardList size={18} className="text-amber-400" /> Pending Orders
+                                </h2>
+                                <Link to="/orders" className="text-[10px] text-amber-400 hover:underline uppercase tracking-wider font-bold">
+                                    Manage
+                                </Link>
+                            </div>
+                            <div className="space-y-3">
+                                {orders.filter(o => o.status === 'pending').length === 0 ? (
+                                    <p className="text-slate-500 text-xs italic py-4 text-center">No pending orders</p>
+                                ) : (
+                                    orders.filter(o => o.status === 'pending').slice(0, 3).map(o => (
+                                        <div key={o.id} className="p-3 rounded-xl bg-white/5 border border-white/5 hover:border-amber-500/30 transition-all cursor-pointer" onClick={() => navigate('/orders')}>
+                                            <div className="flex justify-between items-start mb-1">
+                                                <p className="text-xs font-bold text-white">{o.crop?.name}</p>
+                                                <span className="text-[10px] text-amber-400 font-bold">₹{o.totalPrice?.toLocaleString()}</span>
+                                            </div>
+                                            <p className="text-[10px] text-slate-500">Buyer: {o.wholesaler?.name || 'Verified Buyer'}</p>
+                                            <div className="flex items-center gap-2 mt-2">
+                                                <span className="text-[9px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-400 uppercase font-bold">Awaiting Approval</span>
+                                            </div>
+                                        </div>
+                                    ))
+                                )}
+                            </div>
+                        </div>
+
                         {/* Notifications Summary */}
                         <div className="glass rounded-2xl p-6 border border-white/5">
                             <div className="flex items-center justify-between mb-4">
@@ -313,6 +343,12 @@ export default function FarmerDashboard() {
                                         {IRRIGATION.map(i => <option key={i} value={i}>{i}</option>)}
                                     </select>
                                 </div>
+                            </div>
+                            <div>
+                                <label className="text-xs text-slate-400 mb-1 block">Contact Mobile Number</label>
+                                <input type="tel" value={form.farmerPhone} onChange={e => setForm({ ...form, farmerPhone: e.target.value })} 
+                                    placeholder="+91 98765 43210"
+                                    className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-white text-sm placeholder-slate-500 focus:outline-none focus:border-emerald-500/50 transition-all" />
                             </div>
                             <div>
                                 <label className="text-xs text-slate-400 mb-1 block">Description</label>

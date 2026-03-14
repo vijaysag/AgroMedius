@@ -4,7 +4,7 @@ import api from '../api';
 import { User, Mail, Phone, MapPin, Save, AlertCircle, CheckCircle, Leaf } from 'lucide-react';
 
 export default function ProfilePage() {
-    const { user, logout } = useAuth();
+    const { user, logout, updateUser } = useAuth();
     const [form, setForm] = useState({ name: '', phone: '', city: '', state: '' });
     const [loading, setLoading] = useState(false);
     const [toast, setToast] = useState(null);
@@ -29,11 +29,14 @@ export default function ProfilePage() {
         e.preventDefault();
         setLoading(true);
         try {
-            await api.put('/auth/profile', {
+            const { data } = await api.put('/auth/profile', {
                 name: form.name,
                 phone: form.phone,
                 location: { city: form.city, state: form.state }
             });
+            // Update token + user data in context & localStorage
+            if (data.token) localStorage.setItem('agroToken', data.token);
+            updateUser({ name: data.name, phone: data.phone, location: data.location });
             showToast('Profile updated successfully!');
         } catch (err) {
             showToast(err.response?.data?.message || 'Update failed', 'error');

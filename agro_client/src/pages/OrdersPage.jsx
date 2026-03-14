@@ -168,7 +168,7 @@ export default function OrdersPage() {
                                                         <span className="font-semibold text-emerald-300">Qty: {order.quantity} {order.crop?.unit || order.unit || 'kg'}</span>
                                                     </div>
                                                     <div className="text-xs text-slate-500 mt-0.5">
-                                                        {isFarmer ? `👤 Buyer: ${order.buyer?.name || 'Anonymous'} · ${order.buyer?.phone || ''}` : `🌾 Farmer: ${order.farmer?.name || 'Verified Farmer'}`}
+                                                        {isFarmer ? `👤 Buyer: ${order.wholesaler?.name || 'Anonymous'}` : `🌾 Farmer: ${order.farmer?.name || 'Verified Farmer'}`}
                                                     </div>
                                                 </div>
                                             </div>

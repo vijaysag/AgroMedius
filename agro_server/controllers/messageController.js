@@ -63,6 +63,7 @@ exports.getConversations = async (req, res) => {
         const groups = {};
         messages.forEach(m => {
             const otherUser = m.senderId === req.user.id ? m.recipient : m.sender;
+            if (!otherUser) return; // Safety check
             const otherId = otherUser.id;
             if (!groups[otherId]) {
                 groups[otherId] = {

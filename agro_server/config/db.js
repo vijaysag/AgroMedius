@@ -20,7 +20,19 @@ const connectDB = async () => {
 
         // Note: In production, you'd use migrations instead of sync()
         await sequelize.sync({ alter: false }); 
-        console.log('📊 Database tables synced');
+        
+        // Manual migration check for farmerPhone column in SQLite
+        const queryInterface = sequelize.getQueryInterface();
+        const tableInfo = await queryInterface.describeTable('Crops');
+        if (!tableInfo.farmerPhone) {
+            console.log('🏗️ Adding farmerPhone column to Crops table...');
+            await queryInterface.addColumn('Crops', 'farmerPhone', {
+                type: Sequelize.DataTypes.STRING,
+                allowNull: true
+            });
+        }
+
+        console.log('📊 Database tables synced (Schema Altered)');
 
         // Initial seeding can be triggered here if needed
         const seedDatabase = require('../seedDatabase');

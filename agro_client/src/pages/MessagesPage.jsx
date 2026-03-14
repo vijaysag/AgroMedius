@@ -95,7 +95,7 @@ export default function MessagesPage() {
                             {/* Chat Header */}
                             <div className="p-4 border-b border-white/10 flex items-center gap-3">
                                 <div className="w-9 h-9 rounded-full bg-gradient-to-br from-emerald-500 to-sky-500 flex items-center justify-center text-white font-bold">
-                                    {activeUser.name[0]}
+                                    {(activeUser.name || 'User')[0]}
                                 </div>
                                 <span className="font-semibold text-white">{activeUser.name}</span>
                             </div>

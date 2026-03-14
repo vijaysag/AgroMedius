@@ -155,9 +155,9 @@ export default function CropDetailPage() {
                                     <div className="text-emerald-400 text-xs">Verified Farmer</div>
                                 </div>
                             </div>
-                            {crop.farmer?.phone && (
+                            {(crop.farmerPhone || crop.farmer?.phone) && (
                                 <div className="flex items-center gap-2 text-sm text-slate-300 mb-2">
-                                    <Phone size={14} className="text-slate-500" /> {crop.farmer.phone}
+                                    <Phone size={14} className="text-slate-500" /> {crop.farmerPhone || crop.farmer.phone}
                                 </div>
                             )}
                             {crop.farmer?.email && (

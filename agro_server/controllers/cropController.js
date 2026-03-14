@@ -9,11 +9,21 @@ exports.createCrop = async (req, res) => {
         if (!cropData.location && req.user.location) {
             cropData.location = req.user.location;
         }
+        if (!cropData.farmerPhone && req.user.phone) {
+            cropData.farmerPhone = req.user.phone;
+        }
+        // Handle empty strings for optional date/numeric fields
+        if (cropData.harvestDate === '') delete cropData.harvestDate;
+        
         const crop = await Crop.create(cropData);
         res.status(201).json(crop);
     } catch (error) {
-        console.error('createCrop error:', error.message);
-        res.status(500).json({ message: 'Server error', error: error.message });
+        console.error('CRITICAL createCrop error:', error);
+        res.status(500).json({ 
+            message: 'Server error', 
+            error: error.message,
+            stack: process.env.NODE_ENV === 'development' ? error.stack : undefined 
+        });
     }
 };
 

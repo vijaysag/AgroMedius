@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../api';
@@ -21,13 +21,20 @@ export default function Navbar() {
         navigate('/');
     };
 
+    const fetchNotifications = useCallback(async () => {
+        try {
+            const { data } = await api.get('/notifications');
+            setNotifications(data);
+        } catch (err) { console.error('Notif error:', err); }
+    }, []);
+
     // Notification fetching
     useEffect(() => {
         if (!user) return;
         fetchNotifications();
         const interval = setInterval(fetchNotifications, 30000); // Poll every 30s
         return () => clearInterval(interval);
-    }, [user]);
+    }, [user, fetchNotifications]);
 
     // Close dropdown on click outside
     useEffect(() => {
@@ -39,13 +46,6 @@ export default function Navbar() {
         document.addEventListener("mousedown", handleClickOutside);
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
-
-    const fetchNotifications = async () => {
-        try {
-            const { data } = await api.get('/notifications');
-            setNotifications(data);
-        } catch (err) { console.error('Notif error:', err); }
-    };
 
     const markRead = async (id) => {
         try {

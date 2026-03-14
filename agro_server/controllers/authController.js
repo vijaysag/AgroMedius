@@ -28,6 +28,8 @@ exports.register = async (req, res) => {
             name: user.name,
             email: user.email,
             role: user.role,
+            phone: user.phone,
+            location: user.location,
             token: generateToken(user.id),
         });
     } catch (error) {
@@ -51,6 +53,8 @@ exports.login = async (req, res) => {
                 name: user.name,
                 email: user.email,
                 role: user.role,
+                phone: user.phone,
+                location: user.location,
                 token: generateToken(user.id),
             });
         } else {
@@ -89,10 +93,10 @@ exports.updateProfile = async (req, res) => {
     try {
         const user = await User.findByPk(req.user.id);
         if (user) {
-            user.name = req.body.name || user.name;
-            user.phone = req.body.phone || user.phone;
-            user.location = req.body.location || user.location;
-            user.preferences = req.body.preferences || user.preferences;
+            if (req.body.name !== undefined) user.name = req.body.name;
+            if (req.body.phone !== undefined) user.phone = req.body.phone;
+            if (req.body.location !== undefined) user.location = req.body.location;
+            if (req.body.preferences !== undefined) user.preferences = req.body.preferences;
             if (req.body.password) {
                 user.password = req.body.password;
             }
